@@ -1,16 +1,61 @@
-# React + Vite
+# CodeSentinel Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web do **CodeSentinel**, projeto de monitoramento e centralização de logs de aplicação. Este repositório contém o frontend em React, responsável por consumir a API REST do [backend CodeSentinel](https://github.com/PietroRuotolo/codesentinel) e exibir os logs de forma filtrável e legível.
 
-Currently, two official plugins are available:
+## Status do projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🚧 **Em desenvolvimento inicial.** Atualmente a interface conta com:
 
-## React Compiler
+- Tabela de visualização de logs (`LogTable`), consumindo `GET /logs` da API backend
+- Filtros por **nível** (`DEBUG`, `INFO`, `WARN`, `ERROR`), **mensagem** (busca textual) e **data inicial**
+- Debounce de 400ms nas requisições, evitando chamadas excessivas à API a cada digitação
+- Indicação visual de nível de log por cor (badges)
+- Estado de carregamento (`loading`) enquanto os dados são buscados
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologias
 
-## Expanding the ESLint configuration
+- [React 19](https://react.dev/)
+- [Vite](https://vite.dev/) — build tool e dev server
+- [Tailwind CSS 4](https://tailwindcss.com/) — estilização
+- [ESLint](https://eslint.org/) — padronização de código
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Pré-requisitos
+
+- [Node.js](https://nodejs.org/) 18+ e npm
+- O [backend do CodeSentinel](https://github.com/PietroRuotolo/codesentinel) rodando localmente em `http://localhost:8080`, já que o frontend consome a API a partir dessa URL fixa
+
+## Como rodar o projeto
+
+```bash
+# Clonar o repositório
+git clone https://github.com/PietroRuotolo/codesentinel-frontend.git
+cd codesentinel-frontend
+
+# Instalar dependências
+npm install
+
+# Rodar em modo desenvolvimento
+npm run dev
+```
+
+A aplicação estará disponível em `http://localhost:5173` (porta padrão do Vite).
+
+### Outros scripts disponíveis
+
+| Comando           | Descrição                                  |
+|--------------------|---------------------------------------------|
+| `npm run dev`      | Inicia o servidor de desenvolvimento        |
+| `npm run build`    | Gera a build de produção                    |
+| `npm run preview`  | Serve a build de produção localmente        |
+| `npm run lint`     | Executa o ESLint no projeto                 |
+
+## Estrutura do projeto
+
+```
+src/
+├── components/
+│   └── LogTable.jsx   # Tabela de logs com filtros
+├── App.jsx            # Componente raiz
+├── main.jsx           # Ponto de entrada da aplicação
+└── index.css          # Estilos globais (Tailwind)
+```
