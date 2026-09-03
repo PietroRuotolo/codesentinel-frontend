@@ -66,6 +66,19 @@ function LogTable (){
                     placeholder="Search messages..."
                     className="flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
                 />
+
+                <label htmlFor="after-filter" className="text-sm font-medium text-slate-700">
+                    From:
+                </label>
+                <input
+                    id="after-filter"
+                    type="date"
+                    value={after ?? ""}
+                    onChange={(e) => setAfter(e.target.value || null)}
+                    max= "2026-12-31"
+                    min= "2025-12-31"
+                    className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                />
             </div>
             <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm"> 
                 <table className="min-w-full divide-y divide-slate-200 text-sm">
