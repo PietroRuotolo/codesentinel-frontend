@@ -15,8 +15,7 @@ function LogTable (){
             if(message) params.append("message", message);
             if(after) params.append("after", after);
             if(before) params.append("before", before);
-            const url = `http://localhost:8080/logs?${params.toString()}`;
-                fetch(url)
+                fetch(`${import.meta.env.VITE_API_URL}/logs?${params.toString()}`)
                 .then((response) => response.json())
                 .then((data) => {
                     setData(data);
