@@ -1,4 +1,4 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect, Fragment } from "react";
 
 function LogTable (){
     const [data, setData] = useState([]);
@@ -7,6 +7,30 @@ function LogTable (){
     const [message, setMessage] = useState("");
     const [after, setAfter] = useState(null);
     const [before, setBefore] = useState(null);
+    const [diagnoses, setDiagnoses] = useState({});
+    const [loadingId, setLoadingId] = useState(null);
+
+    const handleDiagnose = (log) => {
+    setLoadingId(log.id);
+        fetch(`${import.meta.env.VITE_API_URL}/diagnose`, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: log.message,
+        })
+            .then((response) => response.text())
+            .then((texto) => {
+                setDiagnoses((prev) => ({ ...prev, [log.id]: texto }));
+                setLoadingId(null);
+            })
+            .catch((error) => {
+                console.error(error);
+                setDiagnoses((prev) => ({
+                    ...prev,
+                    [log.id]: "Failed to get diagnosis. Please try again.",
+                }));
+                setLoadingId(null);
+            });
+    };
 
     useEffect(() => {
         const timeoutId = setTimeout(() =>{
@@ -78,6 +102,19 @@ function LogTable (){
                     min= "2025-12-31"
                     className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
                 />
+
+                <label htmlFor="before-filter" className="text-sm font-medium text-slate-700">
+                    To:
+                </label>
+                <input
+                    id="before-filter"
+                    type="date"
+                    value={before ?? ""}
+                    onChange={(e) => setBefore(e.target.value || null)}
+                    max= "2026-12-31"
+                    min= "2025-12-31"
+                    className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                />
             </div>
             <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm"> 
                 <table className="min-w-full divide-y divide-slate-200 text-sm">
@@ -87,22 +124,45 @@ function LogTable (){
                             <th className="px-4 py-3 text-left font-semibold">Level</th>
                             <th className="px-4 py-3 text-left font-semibold">Date</th>
                             <th className="px-4 py-3 text-left font-semibold">Message</th>
+                            <th className="px-4 py-3 text-left font-semibold">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {data.map((log) => (
-                            <tr key={log.id} className="hover:bg-slate-50 transition-colors">
-                                <td className="px-4 py-3 text-slate-500">{log.id}</td>
-                                <td className="px-4 py-3">
-                                    <span className={levelBadge(log.level)}>
-                                        {log.level}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
-                                    {new Date(log.logDate).toLocaleString()}
-                                </td>
-                                <td className="px-4 py-3 text-slate-800">{log.message}</td>
-                            </tr>
+                            <Fragment key={log.id}>
+                                <tr className="hover:bg-slate-50 transition-colors">
+                                    <td className="px-4 py-3 text-slate-500">{log.id}</td>
+                                    <td className="px-4 py-3">
+                                        <span className={levelBadge(log.level)}>
+                                            {log.level}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
+                                        {new Date(log.logDate).toLocaleString()}
+                                    </td>
+                                    <td className="px-4 py-3 text-slate-800">{log.message}</td>
+                                    <td className="px-4 py-3">
+                                        {log.level === 'ERROR' && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDiagnose(log)}
+                                                disabled={loadingId === log.id}
+                                                className="rounded-md bg-slate-800 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                {loadingId === log.id ? "Diagnosing..." : "Diagnose"}
+                                            </button>
+                                        )}
+                                      
+                                    </td>
+                                </tr>
+                                {diagnoses[log.id] && (
+                                    <tr>
+                                        <td colSpan={5} className="px-4 py-3 bg-slate-50 text-slate-700">
+                                            {diagnoses[log.id]}
+                                        </td>
+                                    </tr>
+                                )}
+                            </Fragment>
                         ))}
                     </tbody>
                 </table>
